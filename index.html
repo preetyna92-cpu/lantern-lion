@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lantern Lion</title>
+<style>
+body{font-family:Arial;margin:0;padding:20px;background:#fff;color:#111}
+.dark{background:#111;color:#fff}
+.card{border:1px solid #ddd;border-radius:12px;padding:15px;margin:10px;box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+button{padding:8px 12px;border:none;border-radius:8px;background:#f59e0b;color:#000;cursor:pointer}
+input,textarea{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:1px solid #ccc}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<h1>🦁 Lantern Lion</h1>
+<button onclick="toggleDark()">🌙 Dark Mode</button>
+<button onclick="login()">Login</button>
+<button onclick="toggleAdmin()">Admin</button>
+
+<div id="cards" class="grid"></div>
+
+<div id="case" class="hidden"></div>
+
+<div id="admin" class="hidden">
+<h2>Admin Upload</h2>
+<input id="name" placeholder="Name">
+<input id="role" placeholder="Role">
+<input id="project" placeholder="Project">
+<input id="summary" placeholder="Summary">
+<input id="problem" placeholder="Problem">
+<input id="solution" placeholder="Solution">
+<input id="result" placeholder="Result">
+<button onclick="addPortfolio()">Publish</button>
+</div>
+
+<script>
+let dark=false
+let admin=false
+let logged=false
+
+let portfolios=JSON.parse(localStorage.getItem("lantern"))||[
+{name:"Aisha Rahman",role:"UX Designer",project:"Mental Health App",
+summary:"Improved onboarding flow",problem:"Users dropped out",
+solution:"Simplified UX",result:"40% retention boost"}
+]
+
+function save(){localStorage.setItem("lantern",JSON.stringify(portfolios))}
+
+function render(){
+document.getElementById("cards").innerHTML=""
+portfolios.forEach((p,i)=>{
+document.getElementById("cards").innerHTML+=`
+<div class="card">
+<h3>${p.name}</h3>
+<p>${p.role}</p>
+<b>${p.project}</b>
+<p>${p.summary}</p>
+<button onclick="view(${i})">View Case</button>
+</div>`
+})
+}
+
+function view(i){
+let p=portfolios[i]
+document.getElementById("case").classList.remove("hidden")
+document.getElementById("case").innerHTML=`
+<div class="card">
+<button onclick="closeCase()">← Back</button>
+<h2>${p.project}</h2>
+<p><b>Problem:</b> ${p.problem}</p>
+<p><b>Solution:</b> ${p.solution}</p>
+<p><b>Result:</b> ${p.result}</p>
+<h3>AI Reviewer</h3>
+<textarea id="aiText" placeholder="Paste case study..."></textarea>
+<button onclick="review()">Review</button>
+<p id="aiResult"></p>
+</div>`
+}
+
+function closeCase(){document.getElementById("case").classList.add("hidden")}
+
+function review(){
+let t=document.getElementById("aiText").value
+document.getElementById("aiResult").innerText=
+t.length>80?"🔥 Strong case study! Add visuals for impact.":"⚠ Needs more detail and results."
+}
+
+function toggleDark(){
+dark=!dark
+document.body.className=dark?"dark":""
+}
+
+function login(){
+logged=!logged
+alert(logged?"Logged in":"Logged out")
+}
+
+function toggleAdmin(){
+if(!logged){alert("Login first");return}
+admin=!admin
+document.getElementById("admin").classList.toggle("hidden")
+}
+
+function addPortfolio(){
+let p={
+name:name.value,
+role:role.value,
+project:project.value,
+summary:summary.value,
+problem:problem.value,
+solution:solution.value,
+result:result.value
+}
+portfolios.push(p)
+save()
+render()
+alert("Published!")
+}
+
+render()
+</script>
+</body>
+                                 </html>
+  
